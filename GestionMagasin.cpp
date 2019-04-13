@@ -3,6 +3,7 @@
 #include "products.h"
 #include "clients.h"
 #include "ventes.h"
+#include "payement.h"
 #include "extras.h"
 #include "menus.h"
 
@@ -28,12 +29,14 @@ int main(){
 	ClientElement *ce=NULL;/// Liste des clients
 	ItemElement * ie=NULL;//// Liste des items de vente
 	VenteElement * ve=NULL;/// Liste des ventes
+	PayementElement * ye=NULL; //Liste des Paiement de vente
 	//////////////////////////
 	
 	// individual items
 		Product *p;
 		Client *c;
-		Vente *vtmp, *v = NULL;
+		Vente *vtmp, *v = NULL, *vpy=NULL; // vpy for payement ;; v for item sale
+		Payement *py;
 	
 	tradeMark(); // affichage de la page de demarrage
 	
@@ -130,7 +133,7 @@ int main(){
 			break;
 			case 3:
 				// menu ventes
-				while((cc = menuVentes(v)) && !ret){
+				while((cc = menuVentes(v, vpy)) && !ret){
 					switch(cc){
 						case 0: ret=1;break;
 						case 1: // ajouter une nouvelle vente
@@ -143,6 +146,7 @@ int main(){
 								scanf("%d %d %d", &d, &m, &y);
 								v=createVente(&ce, &pe, code, idcl, d, m, y);
 								v->itemList = ie;
+								v->payementList = ye;
 								if(v) printf("la vente a ete ajoute!");
 								addVenteToList(&ve, v);
 							}else printf("une vente est deja en cours!");
@@ -237,9 +241,35 @@ int main(){
 							}
 						break;
 						case 6: // reglement d'une vente (process paiement)
-							
-							printf("well done!");
+							printf("Donner le code de vente concernant le payement : ");
+							scanf("%d", &code);
+							vpy = GetVente(ve, code);
+							vpy->payementList = ye;
+						break;
+						case 61: // ajouter une paiement
+							printf("Donner le type de paiement : ");
+							scanf("%s", &des);
+							printf("Donner la date de paiement (jj mm yyyy) : ");
+							scanf("%d %d %d", &d, &m, &y);
+							py = createPayement(des, d, m, y);
+							printf("done\n");
+							addPayementToList(&ye, py);
+						break;
+						case 62: // afficher les paiements
+							printf("Type\tDate\n");
+							afficherPayement(ye);
 							getch();
+						break;
+						case 63: // supprimer une paiement
+							
+						break;
+						case 64: // terminer le process de paiement
+							if(confirm("Etes-vous sur de terminer le processus")){
+								vpy->payementList = ye;
+								vpy=NULL;
+								printf("Processus termine!\n");
+								getch();
+							}
 						break;
 					}
 				}
@@ -274,7 +304,7 @@ int main(){
 							state = !state;
 							setAutoLoadState(state);
 						break;
-					} 
+					}
 				}
 			break;
 		}

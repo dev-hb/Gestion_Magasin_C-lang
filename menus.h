@@ -72,7 +72,7 @@ int menuClients(){
 	return choix;
 }
 
-int menuVentes(Vente * v){
+int menuVentes(Vente * v, Vente * vpy){
 	system("cls");
 	int choix;
 	printf("MENU DES VENTES");
@@ -93,6 +93,12 @@ int menuVentes(Vente * v){
 	printf("4 - Chercher une vente\n");
 	printf("5 - Supprimer une vente\n");
 	printf("6 - Paiemenet d\'une vente\n");
+	if(vpy!=NULL){
+		printf("    61 - Ajouter une paiement\n");
+		printf("    62 - Afficher les paiement\n");
+		printf("    63 - Supprimer une paiement\n");
+		printf("    64 - Terminer le processus de paiement\n");
+	}
 	printf("0 - Retour\n");
 	printf("_________________________________\n");
 	printf("ENTRER votre choix : ");

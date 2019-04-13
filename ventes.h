@@ -9,6 +9,7 @@
 //////////////////////////////////////////////
 
 
+
 typedef struct date{
 	int jour;
 	int mois;
@@ -32,6 +33,7 @@ typedef struct vente{
 	Date * date;
 	ItemElement *itemList;
 	Client * client;
+	struct payementElement * payementList;
 } Vente;
 
 typedef struct venteElement{
