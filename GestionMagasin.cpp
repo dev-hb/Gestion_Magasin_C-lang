@@ -7,6 +7,7 @@
 #include "extras.h"
 #include "menus.h"
 
+
 //////////////////////////////////////////////
 ////// APPLICATION REALISEE PAR ShadMaN //////
 //////////////// Zakaria HBA /////////////////
@@ -45,6 +46,10 @@ int main(){
 		chargerProducts(&pe);
 		chargerClients(&ce);
 		chargerVente(&ve, &ce, &pe);
+		chargerPayement(&ye);
+//		printf("les donnes sont chargee\n");
+//		enregistrerPayementElement(&ye);
+//		printf("les donnes sont enregistree\n");
 		printf("Bonjour !\nLes donnees sont automatiquement charge, tapez pour continuer...");
 		getch();
 	}
@@ -247,16 +252,29 @@ int main(){
 							vpy->payementList = ye;
 						break;
 						case 61: // ajouter une paiement
+							printf("Donner l\'ID de payement : ");
+							scanf("%d", &idpr);
 							printf("Donner le type de paiement : ");
-							scanf("%s", &des);
+							des = (char *) malloc(sizeof(char)*20);
+							scanf("%s", des);
 							printf("Donner la date de paiement (jj mm yyyy) : ");
 							scanf("%d %d %d", &d, &m, &y);
-							py = createPayement(des, d, m, y);
-							printf("done\n");
-							addPayementToList(&ye, py);
+							printf("Donner le montant de payement : ");
+							scanf("%lf", &prix);
+							py = createPayement(idpr, des, prix, d, m, y);
+							prc = getSolde(code);
+							if(prix > prc){
+								printf("Solde insuffisant!\n");
+							}else{
+								prc -= prix;
+								setSolde(code, prc);
+								printf("done\n");
+								addPayementToList(&ye, py);
+							}
+							getch();
 						break;
 						case 62: // afficher les paiements
-							printf("Type\tDate\n");
+							printf("Type\tDate\tMontant\n");
 							afficherPayement(ye);
 							getch();
 						break;
@@ -310,7 +328,6 @@ int main(){
 		}
 	}
 	system("cls");
-	printf("Au revoir.\n");
 	
 	// Enregistrement automatique des données dans les fichiers textes
 	if(getAutoLoadState()){
@@ -318,9 +335,12 @@ int main(){
 		enregistrerClients(&ce);
 		enregistrerVente(&ve);
 		enregistrerVenteItem(&ve);
+//		enregistrerPayementElement(&ye);
 		printf("Les donnees sont automatiquement enregistre, tapez pour terminer...");
 		getch();
 	}
+	
+	printf("Au revoir.\n");
 
 	return 0;	
 }

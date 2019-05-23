@@ -8,6 +8,8 @@
 ///// All Rights Reserverd To DevHB Corp /////
 //////////////////////////////////////////////
 
+#define MAX_PEYMENTS 1024
+
 int confirm(char * message){
 	printf("%s?\n1 - Oui\n0 - Non\nEntrer Votre choix : ", message);
 	int ch;
@@ -134,6 +136,80 @@ void enregistrerVenteItem(VenteElement ** ve){
 		tmp = tmp->next;
 	}
 	fclose(fvi);
+}
+
+void chargerPayement(PayementElement ** ye){
+	if(*ye != NULL){
+		if(! confirm("La liste des payements n\'est pas vide, voulez-vous l\'ecraser")) return;
+		else *ye = NULL;
+	}
+	FILE * fv = fopen("data/payements.txt", "r");
+	Payement * p;
+	int id, idsale, d, m, y;
+	double mt;
+	char * type;
+	type = (char *) malloc(sizeof(char)*20);
+	while(! feof(fv)){
+		fscanf(fv, "%d|%d|%d|%d|%d|%lf|%s \n", &id, &idsale, &d, &m, &y, &mt, type);
+		p = createPayement(id, type, mt, d, m, y);
+		addPayementToList(ye, p);
+	}
+	fclose(fv);
+}
+
+void enregistrerPayementElement(PayementElement ** ye){
+	FILE * fpe = fopen("data/payements.txt", "w");
+	PayementElement * tmp = *ye;
+	while(tmp){
+		fprintf(fpe, "%d|%d|%d|%d|%d|%lf|%s \n",  tmp->payement->id, tmp->payement->vente->saleCode,
+								tmp->payement->date->jour, tmp->payement->date->mois, tmp->payement->date->annee,
+								tmp->payement->montant, tmp->payement->type);
+		tmp = tmp->next;
+	}
+	fclose(fpe);
+}
+
+double getSolde(int id){
+	FILE * f = fopen("data/banque.txt", "r");
+	int id_cli, id_cmpt;
+	double solde;
+	while(! feof(f)){
+		fscanf(f, "%d|%d|%lf\n", &id_cmpt, &id_cli, &solde);
+		if(id_cli == id){
+			fclose(f);
+			return solde;
+		}
+	}
+	fclose(f);
+	return -9999;
+}
+
+void setSolde(int id_c, double sld){
+	FILE * f = fopen("data/banque.txt", "r");
+	int id_cli[MAX_PEYMENTS], id_cmpt[MAX_PEYMENTS], i=0;
+	double solde[MAX_PEYMENTS];
+	while(! feof(f)){
+		fscanf(f, "%d|%d|%lf\n", &id_cmpt[i], &id_cli[i], &solde[i]);
+		i++;
+	}
+	fclose(f);
+	id_cli[i] = -9999;
+	
+	i=0;
+	while(id_cli[i] != -9999){
+		if(id_c == id_cli[i]) break;
+		i++;
+	}
+	
+	solde[i] = sld;
+	
+	FILE * f1 = fopen("data/banque.txt", "w");
+	i=0;
+	while(id_cli[i] != -9999){
+		fprintf(f1, "%d|%d|%lf\n", id_cmpt[i], id_cli[i], solde[i]);
+		i++;
+	}
+	fclose(f1);
 }
 
 int getAutoLoadState(){

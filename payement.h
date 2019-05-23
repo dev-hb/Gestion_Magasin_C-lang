@@ -10,8 +10,11 @@
 
 
 typedef struct payement{
+	int id;
 	char * type;
 	Date * date;
+	double montant;
+	struct vente * vente;
 } Payement;
 
 typedef struct payementElement{
@@ -31,14 +34,16 @@ PayementElement *createPayementElement(Payement *payement){
 	return ye;
 }
 
-Payement *createPayement(char *type, int d, int m, int y){
+Payement *createPayement(int cd, char *type, double mt, int d, int m, int y){
 	Payement *p=(Payement*)malloc(sizeof(Payement));
 	p->type = (char *) malloc(sizeof(char)*255);
 	strcpy(p->type, type);
+	p->id = cd;
 	p->date = (Date *) malloc(sizeof(Date));
 	p->date->jour = d;
 	p->date->mois = m;
 	p->date->annee = y;
+	p->montant = mt;
 	
 	return p;
 }
@@ -63,7 +68,8 @@ void afficherPayement(PayementElement *ye1){
 	if(!ptr) printf("aucun payement enregistre!\n");
 	while(ptr != NULL){
 		printf("%s\t", ptr->payement->type);
-		printf("%s\n", dateToString(ptr->payement->date));
+		printf("%s\t", dateToString(ptr->payement->date));
+		printf("%lf\n", ptr->payement->montant);
 		ptr=ptr->next;
 	}
 }
